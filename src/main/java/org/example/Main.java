@@ -17,9 +17,11 @@ public class Main {
 
         parser.obtainWebPage(url);
         System.out.println();
+
         var lines = parser.extractLines();
         lines.forEach(line -> System.out.println(line.number() + ". " + line.name()));
         System.out.println();
+
         var stations = parser.extractStations();
         stations.forEach(System.out::println);
 
@@ -39,44 +41,20 @@ public class Main {
             v.forEach(file -> System.out.println("\t" + file));
         });
 
-//        path = "D:\\User\\Learn\\Skillbox\\Java\\Projects\\DataCollector\\zip\\stations-data\\data\\2\\4\\depths-1.json";
-//        JsonParser.parseFile(path).forEach(System.out::println);
-//        System.out.println();
-//
-//        path = "D:\\User\\Learn\\Skillbox\\Java\\Projects\\DataCollector\\zip\\stations-data\\data\\0\\5\\dates-2.csv";
-//        CsvParser.parseFile(path).forEach(System.out::println);
-
         System.out.println("\nApplying dates...");
-        discoveredFiles.get("csv").forEach(file -> {
-            CsvParser.parseFile(file.getAbsolutePath()).forEach(stationDate -> {
-                stations.stream()
-                        .filter(station -> station.getName().equals(stationDate.name()) && station.getDate() == null)
-                        .forEach(station -> station.setDate(stationDate.date()));
-            });
-        });
+        discoveredFiles.get("csv")
+                .forEach(file -> CsvParser.parseFile(file.getAbsolutePath())
+                .forEach(stationDate -> Concentrator.applyDate(stations, stationDate)));
+
         stations.forEach(System.out::println);
 
         System.out.println("\nApplying depths...");
-        discoveredFiles.get("json").forEach(file -> {
-            JsonParser.parseFile(file.getAbsolutePath()).forEach(stationDepth -> {
-                stations.stream()
-                        .filter(station -> station.getName().equals(stationDepth.getName()))
-                        .forEach(station -> applyDepth(station, stationDepth));
-            });
-        });
+        discoveredFiles.get("json")
+                .forEach(file -> JsonParser.parseFile(file.getAbsolutePath())
+                .forEach(stationDepth -> Concentrator.applyDepth(stations, stationDepth)));
+
         stations.forEach(System.out::println);
 
-    }
-
-    public static void applyDepth(Station station, StationDepth stationDepth) {
-        var depth = stationDepth.getDepthAsFloat();
-        if (depth == null)  {
-            System.out.println(stationDepth);
-            return;
-        }
-        if (station.getDepth() == null || station.getDepth() > depth) {
-            station.setDepth(depth);
-        }
     }
 
 }
