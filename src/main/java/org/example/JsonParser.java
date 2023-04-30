@@ -1,6 +1,7 @@
 package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.warehouse.StationDepth;
 
 import java.io.IOException;
 import java.nio.file.Paths;

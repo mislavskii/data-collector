@@ -1,6 +1,9 @@
 package org.example;
 
 import net.lingala.zip4j.ZipFile;
+import org.example.warehouse.Station;
+import org.example.warehouse.StationDate;
+import org.example.warehouse.StationDepth;
 
 import java.io.File;
 import java.util.HashMap;
@@ -13,6 +16,7 @@ public class Concentrator {
     public static Map<String, List<File>> getDataFromZip(String zipPath) {
         Map<String, List<File>> discoveredFiles = new HashMap<>();
         try (ZipFile zip = new ZipFile(zipPath)) {
+            // TODO: generalize path
             String outPath = "zip/" + zip.getFile().getName().replace(".zip", "");
             zip.extractAll(outPath);
             FileFinder finder = new FileFinder();
@@ -20,6 +24,7 @@ public class Concentrator {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        // TODO: log
         discoveredFiles.forEach((k, v) -> {
             System.out.println(k + ":");
             v.forEach(file -> System.out.println("\t" + file));

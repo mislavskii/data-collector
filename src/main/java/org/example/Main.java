@@ -1,4 +1,8 @@
 package org.example;
+// TODO:
+//  logging
+//  testing
+//  unload data to files
 
 public class Main {
 

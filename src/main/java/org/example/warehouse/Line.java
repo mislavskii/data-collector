@@ -1,4 +1,4 @@
-package org.example;
+package org.example.warehouse;
 
 public record Line(String name, String number) {
 

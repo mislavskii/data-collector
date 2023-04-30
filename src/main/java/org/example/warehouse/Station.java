@@ -1,4 +1,4 @@
-package org.example;
+package org.example.warehouse;
 
 public class Station {
     private final String name;
