@@ -5,8 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class WebParser {
     private Document page;
@@ -22,8 +21,8 @@ public class WebParser {
         }
     }
 
-    List<Line> extractLines() {
-        List<Line> lines = new ArrayList<>();
+    Set<Line> extractLines() {
+        Set<Line> lines = new TreeSet<>(Comparator.comparing(Line::number));
         Elements lineHolders = page.select("span.js-metro-line");
         lineHolders.forEach(holder -> {
             String lineName = holder.text();
@@ -33,8 +32,8 @@ public class WebParser {
         return lines;
     }
 
-    List<Station> extractStations() {
-        List<Station> stations = new ArrayList<>();
+    Set<Station> extractStations() {
+        Set<Station> stations = new TreeSet<>(Comparator.comparing(Station::getName));
         Elements lines = page.select("div.js-metro-stations");
         lines.forEach(line -> {
             String lineNumber = line.attr("data-line");

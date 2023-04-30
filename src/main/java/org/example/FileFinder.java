@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public class FileFinder {
     private final String[] EXTENSIONS = {"json", "csv"};
-    Map<String, List<File>> results;
+    final Map<String, List<File>> results;
 
     public FileFinder() {
         this.results = new HashMap<>();
@@ -34,22 +34,6 @@ public class FileFinder {
         return results;
     }
 
-    Map<String, List<File>> findDataFilesB(String path) {
-        try {
-            File[] files = new File(path).listFiles();
-            for (File file : files) {
-                if (!file.isDirectory()) {
-                    checkFile(file);
-                } else {
-                    findDataFilesB(file.getAbsolutePath());
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return results;
-    }
-
     private void checkFile(File file) {
         results.keySet().forEach(key -> {
             if (file.getName().endsWith(key)) {
@@ -57,8 +41,5 @@ public class FileFinder {
             }
         });
     }
-
-
-
 
 }

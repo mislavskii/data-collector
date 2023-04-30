@@ -1,11 +1,5 @@
 package org.example;
 
-import net.lingala.zip4j.ZipFile;
-
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -14,7 +8,6 @@ public class Main {
         String url = "https://skillbox-java.github.io/";
 
         WebParser parser = new WebParser();
-
         parser.obtainWebPage(url);
         System.out.println();
 
@@ -24,22 +17,10 @@ public class Main {
 
         var stations = parser.extractStations();
         stations.forEach(System.out::println);
-
-        String path = null;
-        try (ZipFile zip = new ZipFile("zip/stations-data.zip")) {
-            path = "zip/" + zip.getFile().getName().replace(".zip", "");
-            zip.extractAll(path);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         System.out.println();
-        FileFinder finder = new FileFinder();
-        Map<String, List<File>> discoveredFiles = finder.findDataFiles(path);
-        discoveredFiles.forEach((k, v) -> {
-            System.out.println(k + ":");
-            v.forEach(file -> System.out.println("\t" + file));
-        });
+
+        String path = "zip/stations-data.zip";
+        var discoveredFiles = Concentrator.getDataFromZip(path);
 
         System.out.println("\nApplying dates...");
         discoveredFiles.get("csv")
