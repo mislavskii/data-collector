@@ -1,5 +1,8 @@
 package org.example;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.warehouse.StationDate;
 
 import java.io.IOException;
@@ -9,8 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CsvParser {
+    private static final Logger logger = LogManager.getLogger(CsvParser.class);
 
     public static List<StationDate> parseFile(String path) {
+        logger.log(Level.INFO, "Parsing " + path);
         List<StationDate> stations = new ArrayList<>();
         List<String> lines = new ArrayList<>();
         try {
@@ -26,8 +31,6 @@ public class CsvParser {
                 stations.add(new StationDate(name, date));
             }
         });
-
         return stations;
-
     }
 }

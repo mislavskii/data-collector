@@ -4,7 +4,11 @@ package org.example;
 //  testing
 //  unload data to files
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Main {
+    private static final Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
         System.out.println("Hello, Collectors!");
@@ -15,29 +19,27 @@ public class Main {
         parser.obtainWebPage(url);
         System.out.println();
 
+        System.out.println("Extracting lines...");
         var lines = parser.extractLines();
-        lines.forEach(line -> System.out.println(line.number() + ". " + line.name()));
-        System.out.println();
 
+        System.out.println("Extracting stations...");
         var stations = parser.extractStations();
-        stations.forEach(System.out::println);
-        System.out.println();
 
+        System.out.println("Discovering data files...");
         String path = "zip/stations-data.zip";
         var discoveredFiles = Concentrator.getDataFromZip(path);
 
-        System.out.println("\nApplying dates...");
+        System.out.println("Applying dates...");
         discoveredFiles.get("csv")
                 .forEach(file -> CsvParser.parseFile(file.getAbsolutePath())
                 .forEach(stationDate -> Concentrator.applyDate(stations, stationDate)));
 
-        stations.forEach(System.out::println);
-
-        System.out.println("\nApplying depths...");
+        System.out.println("Applying depths...");
         discoveredFiles.get("json")
                 .forEach(file -> JsonParser.parseFile(file.getAbsolutePath())
                 .forEach(stationDepth -> Concentrator.applyDepth(stations, stationDepth)));
 
+        System.out.println("\nAggregated outcome:");
         stations.forEach(System.out::println);
 
     }

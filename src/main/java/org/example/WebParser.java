@@ -1,5 +1,8 @@
 package org.example;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 import org.example.warehouse.Line;
 import org.example.warehouse.Station;
 import org.jsoup.Jsoup;
@@ -11,6 +14,7 @@ import java.util.*;
 
 public class WebParser {
     private Document page;
+    private final Logger logger = LogManager.getLogger(WebParser.class);
 
     void obtainWebPage(String url) {
         System.out.println("URL: " + url);
@@ -24,17 +28,21 @@ public class WebParser {
     }
 
     Set<Line> extractLines() {
+        logger.log(Level.INFO, "Starting line extraction.");
         Set<Line> lines = new TreeSet<>(Comparator.comparing(Line::number));
         Elements lineHolders = page.select("span.js-metro-line");
         lineHolders.forEach(holder -> {
             String lineName = holder.text();
             String lineNumber = holder.attr("data-line");
-            lines.add(new Line(lineName, lineNumber));
+            Line line = new Line(lineName, lineNumber);
+            lines.add(line);
+            logger.log(Level.INFO, "added: " + line.number() + ". " + line.name());
         });
         return lines;
     }
 
     Set<Station> extractStations() {
+        logger.log(Level.INFO, "Starting station extraction.");
         Set<Station> stations = new TreeSet<>(Comparator.comparing(Station::getName));
         Elements lines = page.select("div.js-metro-stations");
         lines.forEach(line -> {
@@ -46,6 +54,7 @@ public class WebParser {
                 station.setHasConnection(holder.select("span.t-icon-metroln").size() > 0);
                 station.setLineNumber(lineNumber);
                 stations.add(station);
+                logger.log(Level.INFO, "added: " + station);
             });
         });
         return stations;
