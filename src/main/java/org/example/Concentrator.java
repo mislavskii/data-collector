@@ -42,8 +42,7 @@ public class Concentrator {
     public static void applyDate(Set<Station> stations, StationDate date) {
         logger.log(Level.INFO, "applying date from: " + date);
         stations.stream()
-                .filter(station -> station.getName().equals(date.name().replace('ё', 'е'))
-                        && station.getDate() == null)
+                .filter(station -> station.getName().equals(date.name()) && station.getDate() == null)
                 .peek(station -> logger.log(Level.INFO, "to " + station))
                 .forEach(station -> {
                     station.setDate(date.date());
