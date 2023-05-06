@@ -12,6 +12,7 @@ public class Main {
         String url = "https://skillbox-java.github.io/";
 
         WebParser parser = new WebParser();
+
         parser.obtainWebPage(url);
         System.out.println();
 
@@ -21,19 +22,17 @@ public class Main {
         System.out.println("Extracting stations...");
         var stations = parser.extractStations();
 
+        Concentrator concentrator = new Concentrator();
+
         System.out.println("Discovering data files...");
         String path = "zip/stations-data.zip";
-        var discoveredFiles = Concentrator.getDataFromZip(path);
+        concentrator.getDataFromZip(path);
 
         System.out.println("Applying dates...");
-        discoveredFiles.get("csv")
-                .forEach(file -> CsvParser.parseFile(file.getAbsolutePath())
-                .forEach(stationDate -> Concentrator.applyDate(stations, stationDate)));
+        concentrator.applyAllDates(stations);
 
         System.out.println("Applying depths...");
-        discoveredFiles.get("json")
-                .forEach(file -> JsonParser.parseFile(file.getAbsolutePath())
-                .forEach(stationDepth -> Concentrator.applyDepth(stations, stationDepth)));
+        concentrator.applyAllDepths(stations);
 
         System.out.println("\nAggregated outcome:");
         stations.forEach(System.out::println);

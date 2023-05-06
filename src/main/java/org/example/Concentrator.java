@@ -15,10 +15,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class Concentrator {
-    private static final Logger logger = LogManager.getLogger(Concentrator.class);
+    private Map<String, List<File>> discoveredFiles;
+    private final Logger logger = LogManager.getLogger(Concentrator.class);
+    private final String SEP = System.lineSeparator();
 
-    public static Map<String, List<File>> getDataFromZip(String zipPath) {
-        Map<String, List<File>> discoveredFiles = new HashMap<>();
+    public Map<String, List<File>> getDataFromZip(String zipPath) {
+        discoveredFiles = new HashMap<>();
         try (ZipFile zip = new ZipFile(zipPath)) {
             // TODO: generalize path
             String outPath = "zip/" + zip.getFile().getName().replace(".zip", "");
@@ -38,11 +40,21 @@ public class Concentrator {
         return discoveredFiles;
     }
 
+    private String normalize(String string) {
+        return string.strip().replaceAll("\\s+?", " ").toLowerCase().replace('ё', 'е');
+    }
 
-    public static void applyDate(Set<Station> stations, StationDate date) {
+    private void logUnaffected(List<Station> unaffectedStations) {
+        StringBuilder report = new StringBuilder(String.format("unaffected (%d):%n", unaffectedStations.size()));
+        unaffectedStations.forEach(station -> report.append(station).append(SEP));
+        logger.log(Level.INFO, report.toString());
+    }
+
+    private void applyDate(Set<Station> stations, StationDate date) {
         logger.log(Level.INFO, "applying date from: " + date);
         stations.stream()
-                .filter(station -> station.getName().equals(date.name()) && station.getDate() == null)
+                .filter(station -> normalize(station.getName()).equals(normalize(date.name()))
+                        && station.getDate() == null)
                 .peek(station -> logger.log(Level.INFO, "to " + station))
                 .forEach(station -> {
                     station.setDate(date.date());
@@ -50,12 +62,19 @@ public class Concentrator {
                 });
     }
 
-    public static void applyDepth(Set<Station> stations, StationDepth stationDepth) {
+    public void applyAllDates(Set<Station> stations) {
+        discoveredFiles.get("csv")
+                .forEach(file -> CsvParser.parseFile(file.getAbsolutePath())
+                        .forEach(stationDate -> applyDate(stations, stationDate)));
+        logUnaffected(stations.stream().filter(station -> station.getDate() == null).toList());
+    }
+
+    private void applyDepth(Set<Station> stations, StationDepth stationDepth) {
         logger.log(Level.INFO, "applying depth from: " + stationDepth);
         var depth = stationDepth.getDepthAsFloat();
         if (depth != null)  {
             stations.stream()
-                    .filter(station -> station.getName().equals(stationDepth.getName()))
+                    .filter(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))
                     .peek(station -> logger.log(Level.INFO, "to " + station))
                     .filter(station -> station.getDepth() == null || station.getDepth() > depth)
                     .forEach(station -> {
@@ -63,6 +82,13 @@ public class Concentrator {
                         logger.log(Level.INFO, "result: " + station);
                     });
         }
+    }
+
+    public void applyAllDepths(Set<Station> stations) {
+        discoveredFiles.get("json")
+                .forEach(file -> JsonParser.parseFile(file.getAbsolutePath())
+                        .forEach(stationDepth -> applyDepth(stations, stationDepth)));
+        logUnaffected(stations.stream().filter(station -> station.getDepth() == null).toList());
     }
 
 }
