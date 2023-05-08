@@ -9,18 +9,19 @@ import org.example.warehouse.StationDepth;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 public class JsonParser {
     private static final Logger logger = LogManager.getLogger(JsonParser.class);
 
-    public static List<StationDepth> parseFile(String path) {
+    public static TreeSet<StationDepth> parseFile(String path) {
         logger.log(Level.INFO, "Parsing " + path);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<StationDepth> stations = null;
+        TreeSet<StationDepth> stations = new TreeSet<>(Comparator.comparing(StationDepth::getName));
         try {
-            stations = Arrays.asList(mapper.readValue(Paths.get(path).toFile(), StationDepth[].class));
+            stations.addAll(Arrays.asList(mapper.readValue(Paths.get(path).toFile(), StationDepth[].class)));
         } catch (IOException e) {
             e.printStackTrace();
         }

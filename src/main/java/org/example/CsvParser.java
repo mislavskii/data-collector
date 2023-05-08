@@ -9,14 +9,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 
 public class CsvParser {
     private static final Logger logger = LogManager.getLogger(CsvParser.class);
 
-    public static List<StationDate> parseFile(String path) {
+    public static TreeSet<StationDate> parseFile(String path) {
         logger.log(Level.INFO, "Parsing " + path);
-        List<StationDate> stations = new ArrayList<>();
+        TreeSet<StationDate> stations = new TreeSet<>(Comparator.comparing(StationDate::name));
         List<String> lines = new ArrayList<>();
         try {
             lines = Files.readAllLines(Paths.get(path));

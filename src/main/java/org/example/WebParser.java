@@ -42,8 +42,9 @@ public class WebParser {
     }
 
     Set<Station> extractStations() {
-        logger.log(Level.INFO, "Starting station extraction.");
-        Set<Station> stations = new TreeSet<>(Comparator.comparing(Station::getName));
+        logger.log(Level.INFO, "EXTRACTING STATIONS...");
+        Set<Station> stations = new TreeSet<>(Comparator.comparing(Station::getName)
+                .thenComparing(Station::getLineNumber));
         Elements lines = page.select("div.js-metro-stations");
         lines.forEach(line -> {
             String lineNumber = line.attr("data-line");
@@ -53,10 +54,11 @@ public class WebParser {
                 Station station = new Station(stationName);
                 station.setHasConnection(holder.select("span.t-icon-metroln").size() > 0);
                 station.setLineNumber(lineNumber);
-                stations.add(station);
-                logger.log(Level.INFO, "added: " + station);
+                String message = stations.add(station) ? "added: " : "- NOT ADDED: ";
+                logger.log(Level.INFO, message + station);
             });
         });
+        logger.log(Level.INFO, "TOTAL: " + stations.size());
         return stations;
     }
 

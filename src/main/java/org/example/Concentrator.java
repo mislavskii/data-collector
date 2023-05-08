@@ -52,6 +52,12 @@ public class Concentrator {
 
     private void applyDate(Set<Station> stations, StationDate date) {
         logger.log(Level.INFO, "applying date from: " + date);
+        if (stations.stream()
+                .noneMatch(station -> normalize(station.getName()).equals(normalize(date.name())))) {
+            String message = stations.add(new Station(date.name(), date.date())) ? "+ADDED: " : "-FAILED TO ADD: ";
+            logger.log(Level.INFO, message + date);
+            return;
+        }
         stations.stream()
                 .filter(station -> normalize(station.getName()).equals(normalize(date.name()))
                         && station.getDate() == null)
@@ -72,16 +78,21 @@ public class Concentrator {
     private void applyDepth(Set<Station> stations, StationDepth stationDepth) {
         logger.log(Level.INFO, "applying depth from: " + stationDepth);
         var depth = stationDepth.getDepthAsFloat();
-        if (depth != null)  {
-            stations.stream()
-                    .filter(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))
-                    .peek(station -> logger.log(Level.INFO, "to " + station))
-                    .filter(station -> station.getDepth() == null || station.getDepth() > depth)
-                    .forEach(station -> {
-                        station.setDepth(depth);
-                        logger.log(Level.INFO, "result: " + station);
-                    });
+        if (depth == null)  {return;}
+        if (stations.stream()
+                .noneMatch(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))) {
+            logger.log(Level.INFO, "ADDING TO STATIONS " + stationDepth);
+            stations.add(new Station(stationDepth.getName(), depth));
+            return;
         }
+        stations.stream()
+                .filter(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))
+                .peek(station -> logger.log(Level.INFO, "to " + station))
+        .filter(station -> station.getDepth() == null || station.getDepth() > depth)
+        .forEach(station -> {
+            station.setDepth(depth);
+            logger.log(Level.INFO, "result: " + station);
+        });
     }
 
     public void applyAllDepths(Set<Station> stations) {

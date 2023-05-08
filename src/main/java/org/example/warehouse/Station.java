@@ -11,6 +11,16 @@ public class Station {
         this.name = name;
     }
 
+    public Station(String name, Float depth) {
+        this(name);
+        this.depth = depth;
+    }
+
+    public Station(String name, String date) {
+        this(name);
+        this.date = date;
+    }
+
     public String getName() {
         return name;
     }
