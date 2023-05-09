@@ -15,6 +15,10 @@ public class StationDepth {
         return name;
     }
 
+    public String getDepth() {
+        return depth;
+    }
+
     public Float getDepthAsFloat() {
         try {
             return Float.parseFloat(depth.replace(',', '.'));

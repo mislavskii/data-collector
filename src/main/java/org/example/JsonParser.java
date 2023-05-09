@@ -19,7 +19,8 @@ public class JsonParser {
         logger.log(Level.INFO, "Parsing " + path);
 
         ObjectMapper mapper = new ObjectMapper();
-        TreeSet<StationDepth> stations = new TreeSet<>(Comparator.comparing(StationDepth::getName));
+        TreeSet<StationDepth> stations = new TreeSet<>(Comparator.comparing(StationDepth::getName)
+                .thenComparing(StationDepth::getDepth));
         try {
             stations.addAll(Arrays.asList(mapper.readValue(Paths.get(path).toFile(), StationDepth[].class)));
         } catch (IOException e) {

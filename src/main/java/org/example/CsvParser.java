@@ -18,7 +18,8 @@ public class CsvParser {
 
     public static TreeSet<StationDate> parseFile(String path) {
         logger.log(Level.INFO, "Parsing " + path);
-        TreeSet<StationDate> stations = new TreeSet<>(Comparator.comparing(StationDate::name));
+        TreeSet<StationDate> stations = new TreeSet<>(Comparator.comparing(StationDate::name)
+                .thenComparing(StationDate::date));
         List<String> lines = new ArrayList<>();
         try {
             lines = Files.readAllLines(Paths.get(path));

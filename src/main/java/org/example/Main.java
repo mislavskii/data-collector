@@ -1,6 +1,5 @@
 package org.example;
 // TODO:
-//  logging
 //  testing
 //  unload data to files
 
