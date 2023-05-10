@@ -58,6 +58,25 @@ public class Station {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Station station = (Station) o;
+
+        if (!getName().equals(station.getName())) return false;
+        return getLineNumber() != null ?
+                getLineNumber().equals(station.getLineNumber()) : station.getLineNumber() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getName().hashCode();
+        result = 31 * result + (getLineNumber() != null ? getLineNumber().hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Station{" +
                 "name='" + name + '\'' +

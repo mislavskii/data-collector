@@ -35,6 +35,7 @@ public class Main {
 
         System.out.println("\nAggregated outcome:");
         stations.forEach(System.out::println);
+        System.out.println("Total: " + stations.size());
 
     }
 
