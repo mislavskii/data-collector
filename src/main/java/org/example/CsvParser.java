@@ -8,18 +8,14 @@ import org.example.warehouse.StationDate;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 public class CsvParser {
     private static final Logger logger = LogManager.getLogger(CsvParser.class);
 
-    public static TreeSet<StationDate> parseFile(String path) {
+    public static Set<StationDate> parseFile(String path) {
         logger.log(Level.INFO, "Parsing " + path);
-        TreeSet<StationDate> stations = new TreeSet<>(Comparator.comparing(StationDate::name)
-                .thenComparing(StationDate::date));
+        Set<StationDate> stations = new HashSet<>();
         List<String> lines = new ArrayList<>();
         try {
             lines = Files.readAllLines(Paths.get(path));
@@ -34,6 +30,7 @@ public class CsvParser {
                 stations.add(new StationDate(name, date));
             }
         });
+        logger.log(Level.INFO, "Total dates: " + stations.size());
         return stations;
     }
 }

@@ -66,16 +66,18 @@ public class Concentrator {
     }
 
     public void applyAllDates(Set<Station> stations) {
+        TreeSet<StationDate> allDates = new TreeSet<>(
+                Comparator.comparing(StationDate::name).thenComparing(StationDate::date));
         discoveredFiles.get("csv")
-                .forEach(file -> CsvParser.parseFile(file.getAbsolutePath())
-                        .forEach(stationDate -> applyDate(stations, stationDate)));
+                .forEach(file -> allDates.addAll(CsvParser.parseFile(file.getAbsolutePath())));
+        logger.log(Level.INFO, "Aggregated dates count: " + allDates.size());
+        allDates.forEach(stationDate -> applyDate(stations, stationDate));
         logUnaffected(stations.stream().filter(station -> station.getDate() == null).toList());
     }
 
     private void applyDepth(Set<Station> stations, StationDepth stationDepth) {
         logger.log(Level.INFO, "applying depth from: " + stationDepth);
         var depth = stationDepth.getDepthAsFloat();
-        if (depth == null)  {return;}
         if (stations.stream()
                 .noneMatch(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))) {
             logger.log(Level.INFO, "ADDING TO STATIONS " + stationDepth);
