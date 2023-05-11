@@ -9,23 +9,26 @@ import org.example.warehouse.StationDepth;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class JsonParser {
     private static final Logger logger = LogManager.getLogger(JsonParser.class);
 
-    public static TreeSet<StationDepth> parseFile(String path) {
+    public static Set<StationDepth> parseFile(String path) {
         logger.log(Level.INFO, "Parsing " + path);
 
         ObjectMapper mapper = new ObjectMapper();
-        TreeSet<StationDepth> stations = new TreeSet<>(Comparator.comparing(StationDepth::getName)
-                .thenComparing(StationDepth::getDepth));
+        Set<StationDepth> stations = new HashSet<>();
         try {
             stations.addAll(Arrays.asList(mapper.readValue(Paths.get(path).toFile(), StationDepth[].class)));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        stations = stations.stream().filter(stationDepth -> stationDepth.getDepthAsFloat() != null)
+                .collect(Collectors.toSet());
+        logger.log(Level.INFO, "Total depths: " + stations.size());
         return stations;
     }
 

@@ -28,6 +28,24 @@ public class StationDepth {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StationDepth that = (StationDepth) o;
+
+        if (!getName().equals(that.getName())) return false;
+        return getDepth() != null ? getDepth().equals(that.getDepth()) : that.getDepth() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getName().hashCode();
+        result = 31 * result + (getDepth() != null ? getDepth().hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "StationDepth{" +
                 "name='" + name + '\'' +

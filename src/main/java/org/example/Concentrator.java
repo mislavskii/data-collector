@@ -93,9 +93,12 @@ public class Concentrator {
     }
 
     public void applyAllDepths(Set<Station> stations) {
+        TreeSet<StationDepth> allDepths = new TreeSet<>(
+                Comparator.comparing(StationDepth::getName).thenComparing(StationDepth::getDepthAsFloat));
         discoveredFiles.get("json")
-                .forEach(file -> JsonParser.parseFile(file.getAbsolutePath())
-                        .forEach(stationDepth -> applyDepth(stations, stationDepth)));
+                .forEach(file -> allDepths.addAll(JsonParser.parseFile(file.getAbsolutePath())));
+        logger.log(Level.INFO, "Aggregated depths count: " + allDepths.size());
+        allDepths.forEach(stationDepth -> applyDepth(stations, stationDepth));
         logUnaffected(stations.stream().filter(station -> station.getDepth() == null).toList());
     }
 
