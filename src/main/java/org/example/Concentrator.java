@@ -9,6 +9,7 @@ import org.example.warehouse.StationDate;
 import org.example.warehouse.StationDepth;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.*;
 
 public class Concentrator {
@@ -41,6 +42,14 @@ public class Concentrator {
         return string.strip().replaceAll("\\s+?", " ").toLowerCase().replace('ё', 'е');
     }
 
+    private LocalDate getLocalDate(String date) {
+        var chunks = date.split("\\.");
+        int day = Integer.parseInt(chunks[0]);
+        int month = Integer.parseInt(chunks[1]);
+        int year = Integer.parseInt(chunks[2]);
+        return LocalDate.of(year, month, day);
+    }
+
     private void logUnaffected(List<Station> unaffectedStations) {
         StringBuilder report = new StringBuilder(String.format("unaffected (%d):%n", unaffectedStations.size()));
         unaffectedStations.forEach(station -> report.append(station).append(SEP));
@@ -56,9 +65,10 @@ public class Concentrator {
             return;
         }
         stations.stream()
-                .filter(station -> normalize(station.getName()).equals(normalize(date.name()))
-                        && station.getDate() == null)
+                .filter(station -> normalize(station.getName()).equals(normalize(date.name())))
                 .peek(station -> logger.log(Level.INFO, "to " + station))
+                .filter(station -> station.getDate() == null
+                        || getLocalDate(station.getDate()).isAfter(getLocalDate(date.date())))
                 .forEach(station -> {
                     station.setDate(date.date());
                     logger.log(Level.INFO, "result: " + station);
@@ -80,18 +90,18 @@ public class Concentrator {
         var depth = stationDepth.getDepthAsFloat();
         if (stations.stream()
                 .noneMatch(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))) {
-            logger.log(Level.INFO, "ADDING TO STATIONS " + stationDepth);
-            stations.add(new Station(stationDepth.getName(), depth));
+            String message = stations.add(new Station(stationDepth.getName(), depth)) ? "+ADDED: " : "-FAILED TO ADD: ";
+            logger.log(Level.INFO, message + stationDepth);
             return;
         }
         stations.stream()
                 .filter(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))
                 .peek(station -> logger.log(Level.INFO, "to " + station))
-        .filter(station -> station.getDepth() == null || station.getDepth() > depth)
-        .forEach(station -> {
-            station.setDepth(depth);
-            logger.log(Level.INFO, "result: " + station);
-        });
+                .filter(station -> station.getDepth() == null || station.getDepth() > depth)
+                .forEach(station -> {
+                    station.setDepth(depth);
+                    logger.log(Level.INFO, "result: " + station);
+                });
     }
 
     public void applyAllDepths(Set<Station> stations) {
