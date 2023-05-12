@@ -9,7 +9,6 @@ import org.example.warehouse.StationDate;
 import org.example.warehouse.StationDepth;
 
 import java.io.File;
-import java.time.LocalDate;
 import java.util.*;
 
 public class Concentrator {
@@ -42,46 +41,39 @@ public class Concentrator {
         return string.strip().replaceAll("\\s+?", " ").toLowerCase().replace('ё', 'е');
     }
 
-    private LocalDate getLocalDate(String date) {
-        var chunks = date.split("\\.");
-        int day = Integer.parseInt(chunks[0]);
-        int month = Integer.parseInt(chunks[1]);
-        int year = Integer.parseInt(chunks[2]);
-        return LocalDate.of(year, month, day);
-    }
-
     private void logUnaffected(List<Station> unaffectedStations) {
         StringBuilder report = new StringBuilder(String.format("unaffected (%d):%n", unaffectedStations.size()));
         unaffectedStations.forEach(station -> report.append(station).append(SEP));
         logger.log(Level.INFO, report.toString());
     }
 
-    private void applyDate(Set<Station> stations, StationDate date) {
-        logger.log(Level.INFO, "applying date from: " + date);
-        if (stations.stream()
-                .noneMatch(station -> normalize(station.getName()).equals(normalize(date.name())))) {
-            String message = stations.add(new Station(date.name(), date.date())) ? "+ADDED: " : "-FAILED TO ADD: ";
-            logger.log(Level.INFO, message + date);
-            return;
-        }
-        stations.stream()
-                .filter(station -> normalize(station.getName()).equals(normalize(date.name())))
-                .peek(station -> logger.log(Level.INFO, "to " + station))
-                .filter(station -> station.getDate() == null
-                        || getLocalDate(station.getDate()).isAfter(getLocalDate(date.date())))
-                .forEach(station -> {
-                    station.setDate(date.date());
-                    logger.log(Level.INFO, "result: " + station);
-                });
-    }
-
     public void applyAllDates(Set<Station> stations) {
-        TreeSet<StationDate> allDates = new TreeSet<>(
-                Comparator.comparing(StationDate::name).thenComparing(StationDate::date));
+        TreeSet<StationDate> allDates = new TreeSet<>();
         discoveredFiles.get("csv")
                 .forEach(file -> allDates.addAll(CsvParser.parseFile(file.getAbsolutePath())));
         logger.log(Level.INFO, "Aggregated dates count: " + allDates.size());
-        allDates.forEach(stationDate -> applyDate(stations, stationDate));
+        logger.log(Level.INFO, "Checking for new entries...");
+        allDates.forEach(stationDate -> {
+            if (stations.stream()
+                    .noneMatch(station -> normalize(station.getName()).equals(normalize(stationDate.getName())))) {
+                String message = stations.add(new Station(stationDate.getName(), stationDate.getDate())) ? "+ADDED: " : "-FAILED TO ADD: ";
+                logger.log(Level.INFO, message + stationDate);
+            }
+        });
+        logger.log(Level.INFO, "Applying dates...");
+        stations.stream().filter(station -> station.getDate() == null)
+                .forEach(station -> {
+                    logger.log(Level.INFO, "choosing date for " + station);
+                    StringBuilder candidates = new StringBuilder("from: ");
+                    var date = allDates.stream()
+                            .filter(stationDate -> normalize(stationDate.getName()).equals(normalize(station.getName())))
+                            .peek(stationDate -> candidates.append(stationDate.getDate()).append("; "))
+                            .min(Comparator.comparing(StationDate::getDateAsLocalDate))
+                            .map(StationDate::getDate).orElse(null);
+                    logger.log(Level.INFO, candidates);
+                    station.setDate(date);
+                    logger.log(Level.INFO, "result: " + station);
+                });
         logUnaffected(stations.stream().filter(station -> station.getDate() == null).toList());
     }
 

@@ -1,8 +1,40 @@
 package org.example.warehouse;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
-public record StationDate (String name, String date) {
+public class StationDate implements Comparable<StationDate> {
+    private String name;
+    private String date;
+
+    public StationDate(String name, String date) {
+        this.name = name;
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public LocalDate getDateAsLocalDate() {
+        var chunks = date.split("\\.");
+        int day = Integer.parseInt(chunks[0]);
+        int month = Integer.parseInt(chunks[1]);
+        int year = Integer.parseInt(chunks[2]);
+        return LocalDate.of(year, month, day);
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -22,4 +54,19 @@ public record StationDate (String name, String date) {
         return result;
     }
 
+    @Override
+    public int compareTo(StationDate that) {
+        if (this.name.equals(that.getName())) {
+            return getDateAsLocalDate().compareTo(that.getDateAsLocalDate());
+        }
+        return this.name.compareTo(that.getName());
+    }
+
+    @Override
+    public String toString() {
+        return "StationDate{" +
+                "name='" + name + '\'' +
+                ", date='" + date + '\'' +
+                '}';
+    }
 }

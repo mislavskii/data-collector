@@ -34,8 +34,8 @@ public class Investigator {
             discoveredFiles.get("csv")
                     .forEach(file -> CsvParser.parseFile(file.getAbsolutePath())
                             .forEach(stationDate -> {
-                                if (getDissimilarityScore(n, stationDate.name()) < 3) {
-                                    System.out.println("\t" + stationDate.name());
+                                if (getDissimilarityScore(n, stationDate.getName()) < 3) {
+                                    System.out.println("\t" + stationDate.getName());
                                 }
                             }));
         });
