@@ -43,8 +43,7 @@ public class WebParser {
 
     Set<Station> extractStations() {
         logger.log(Level.INFO, "EXTRACTING STATIONS...");
-        Set<Station> stations = new TreeSet<>(Comparator.comparing(Station::getName)
-                .thenComparing(Station::getLineNumber));
+        Set<Station> stations = new TreeSet<>();
         Elements lines = page.select("div.js-metro-stations");
         lines.forEach(line -> {
             String lineNumber = line.attr("data-line");

@@ -1,6 +1,6 @@
 package org.example.warehouse;
 
-public class Station {
+public class Station implements Comparable<Station> {
     private final String name;
     private String lineNumber;
     private Float depth;
@@ -74,6 +74,14 @@ public class Station {
         int result = getName().hashCode();
         result = 31 * result + (getLineNumber() != null ? getLineNumber().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public int compareTo(Station station) {
+        if (this.name.equals(station.getName())) {
+            return this.lineNumber.compareTo(station.getLineNumber());
+        }
+        return this.name.compareTo(station.getName());
     }
 
     @Override
