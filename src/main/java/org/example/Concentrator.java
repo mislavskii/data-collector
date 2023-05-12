@@ -77,32 +77,34 @@ public class Concentrator {
         logUnaffected(stations.stream().filter(station -> station.getDate() == null).toList());
     }
 
-    private void applyDepth(Set<Station> stations, StationDepth stationDepth) {
-        logger.log(Level.INFO, "applying depth from: " + stationDepth);
-        var depth = stationDepth.getDepthAsFloat();
-        if (stations.stream()
-                .noneMatch(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))) {
-            String message = stations.add(new Station(stationDepth.getName(), depth)) ? "+ADDED: " : "-FAILED TO ADD: ";
-            logger.log(Level.INFO, message + stationDepth);
-            return;
-        }
-        stations.stream()
-                .filter(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))
-                .peek(station -> logger.log(Level.INFO, "to " + station))
-                .filter(station -> station.getDepth() == null || station.getDepth() > depth)
-                .forEach(station -> {
-                    station.setDepth(depth);
-                    logger.log(Level.INFO, "result: " + station);
-                });
-    }
-
     public void applyAllDepths(Set<Station> stations) {
-        TreeSet<StationDepth> allDepths = new TreeSet<>(
-                Comparator.comparing(StationDepth::getName).thenComparing(StationDepth::getDepthAsFloat));
+        TreeSet<StationDepth> allDepths = new TreeSet<>();
         discoveredFiles.get("json")
                 .forEach(file -> allDepths.addAll(JsonParser.parseFile(file.getAbsolutePath())));
         logger.log(Level.INFO, "Aggregated depths count: " + allDepths.size());
-        allDepths.forEach(stationDepth -> applyDepth(stations, stationDepth));
+        logger.log(Level.INFO, "Checking for new entries...");
+        allDepths.forEach(stationDepth -> {
+            var depth = stationDepth.getDepthAsFloat();
+            if (stations.stream()
+                    .noneMatch(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))) {
+                String message = stations.add(new Station(stationDepth.getName(), depth)) ? "+ADDED: " : "-FAILED TO ADD: ";
+                logger.log(Level.INFO, message + stationDepth);
+            }
+        });
+        logger.log(Level.INFO, "Applying depths...");
+        stations.stream().filter(station -> station.getDepth() == null)
+                .forEach(station -> {
+                    logger.log(Level.INFO, "choosing depth for " + station);
+                    StringBuilder candidates = new StringBuilder("from: ");
+                    var depth = allDepths.stream()
+                            .filter(stationDate -> normalize(stationDate.getName()).equals(normalize(station.getName())))
+                            .peek(stationDepth -> candidates.append(stationDepth.getDepth()).append("; "))
+                            .min(Comparator.comparing(StationDepth::getDepthAsFloat))
+                            .map(StationDepth::getDepthAsFloat).orElse(null);
+                    logger.log(Level.INFO, candidates);
+                    station.setDepth(depth);
+                    logger.log(Level.INFO, "result: " + station);
+                });
         logUnaffected(stations.stream().filter(station -> station.getDepth() == null).toList());
     }
 

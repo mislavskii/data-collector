@@ -2,7 +2,7 @@ package org.example.warehouse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class StationDepth {
+public class StationDepth implements Comparable<StationDepth> {
     @JsonProperty("station_name")
     private String name;
     @JsonProperty("depth")
@@ -43,6 +43,14 @@ public class StationDepth {
         int result = getName().hashCode();
         result = 31 * result + (getDepth() != null ? getDepth().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public int compareTo(StationDepth that) {
+        if (name.equals(that.getName())) {
+            return getDepthAsFloat().compareTo(that.getDepthAsFloat());
+        }
+        return name.compareTo(that.getName());
     }
 
     @Override
