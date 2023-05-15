@@ -2,6 +2,8 @@ package org.example;
 
 import org.example.warehouse.Station;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 
 public class Investigator {
@@ -21,7 +23,7 @@ public class Investigator {
 
         var datelessStations = stations.stream()
                 .filter(station -> station.getDate() == null)
-                .sorted(Comparator.comparing(Station::getLineNumber))
+                .sorted(Comparator.comparing(Station::getLine))
                 .toList();
 
         datelessStations.forEach(System.out::println);
@@ -39,6 +41,19 @@ public class Investigator {
                                 }
                             }));
         });
+
+        System.out.println();
+        ByteBuffer buff = ByteBuffer.allocate(32); // mark = *, position = *, limit = *, capacity = *
+        buff.mark(); // mark = *, position = *, limit = *, capacity = *
+        buff.put("Byte".getBytes());// mark = *, position = *, limit = *, capacity = *
+        buff.reset(); // mark = *, position = *, limit = *, capacity = *
+        buff.put("Buffer are part of NIO".getBytes()); // mark = *, position = *, limit = *, capacity = *
+        buff.limit(30); // mark = *, position = *, limit = *, capacity = *
+        buff.flip(); // mark = *, position = *, limit = *, capacity = *
+
+        byte[] result = new byte[buff.limit()];
+        buff.get(result); // mark = *, position = *, limit = *, capacity = *
+        System.out.println(new String(result, StandardCharsets.UTF_8)); // ***
 
     }
 

@@ -52,7 +52,7 @@ public class WebParser {
                 String stationName = holder.select("span.name").text();
                 Station station = new Station(stationName);
                 station.setHasConnection(holder.select("span.t-icon-metroln").size() > 0);
-                station.setLineNumber(lineNumber);
+                station.setLine(lineNumber);
                 String message = stations.add(station) ? "added: " : "- NOT ADDED: ";
                 logger.log(Level.INFO, message + station);
             });

@@ -37,6 +37,10 @@ public class Main {
         stations.forEach(System.out::println);
         System.out.println("Total: " + stations.size());
 
+        System.out.println();
+        JsonWriter jsonWriter = new JsonWriter(stations, lines);
+        jsonWriter.serializeStations();
+
     }
 
 }

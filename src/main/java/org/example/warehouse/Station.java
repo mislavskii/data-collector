@@ -2,9 +2,9 @@ package org.example.warehouse;
 
 public class Station implements Comparable<Station> {
     private final String name;
-    private String lineNumber;
-    private Float depth;
+    private String line;
     private String date;
+    private Float depth;
     private boolean hasConnection;
 
     public Station(String name) {
@@ -25,12 +25,12 @@ public class Station implements Comparable<Station> {
         return name;
     }
 
-    public String getLineNumber() {
-        return lineNumber;
+    public String getLine() {
+        return line;
     }
 
-    public void setLineNumber(String lineNumber) {
-        this.lineNumber = lineNumber;
+    public void setLine(String line) {
+        this.line = line;
     }
 
     public boolean hasConnection() {
@@ -65,21 +65,21 @@ public class Station implements Comparable<Station> {
         Station station = (Station) o;
 
         if (!getName().equals(station.getName())) return false;
-        return getLineNumber() != null ?
-                getLineNumber().equals(station.getLineNumber()) : station.getLineNumber() == null;
+        return getLine() != null ?
+                getLine().equals(station.getLine()) : station.getLine() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getName().hashCode();
-        result = 31 * result + (getLineNumber() != null ? getLineNumber().hashCode() : 0);
+        result = 31 * result + (getLine() != null ? getLine().hashCode() : 0);
         return result;
     }
 
     @Override
     public int compareTo(Station station) {
         if (this.name.equals(station.getName())) {
-            return this.lineNumber.compareTo(station.getLineNumber());
+            return this.line.compareTo(station.getLine());
         }
         return this.name.compareTo(station.getName());
     }
@@ -88,7 +88,7 @@ public class Station implements Comparable<Station> {
     public String toString() {
         return "Station{" +
                 "name='" + name + '\'' +
-                ", lineNumber='" + lineNumber + '\'' +
+                ", lineNumber='" + line + '\'' +
                 ", depth=" + depth +
                 ", date='" + date + '\'' +
                 ", hasConnection=" + hasConnection +
