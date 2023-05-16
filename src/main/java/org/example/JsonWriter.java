@@ -39,12 +39,12 @@ public class JsonWriter {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void serializeStationsAndLines() {
-        Map<String, Object> greatMapOfEverything = new HashMap<>();
+        Map<String, Object> greatMapOfEverything = new LinkedHashMap<>();
         greatMapOfEverything.put("stations", new TreeMap<>(mapStationsToLines()));
+        greatMapOfEverything.put("lines", lines);
         try {
             writer.writeValue(Paths.get("json/map.json").toFile(), greatMapOfEverything);
         } catch (IOException e) {

@@ -1,6 +1,6 @@
 package org.example.warehouse;
 
-public record Line(String name, String number) {
+public record Line(String number, String name) {
 
     @Override
     public String toString() {

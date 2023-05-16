@@ -28,6 +28,7 @@ public class Concentrator {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        discoveredFiles.values().forEach(v -> v.sort(Comparator.comparing(File::getName)));
         StringBuilder fileMap = new StringBuilder("discovered: \n");
         discoveredFiles.forEach((k, v) -> {
             fileMap.append(k).append(":\n");
@@ -48,7 +49,7 @@ public class Concentrator {
     }
 
     public void applyAllDates(List<Station> stations) {
-        TreeSet<StationDate> allDates = new TreeSet<>();
+        Set<StationDate> allDates = new LinkedHashSet<>();
         discoveredFiles.get("csv")
                 .forEach(file -> allDates.addAll(CsvParser.parseFile(file.getAbsolutePath())));
         logger.log(Level.INFO, "Aggregated dates count: " + allDates.size());
