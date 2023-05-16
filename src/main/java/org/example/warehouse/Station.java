@@ -88,7 +88,7 @@ public class Station implements Comparable<Station> {
     public String toString() {
         return "Station{" +
                 "name='" + name + '\'' +
-                ", lineNumber='" + line + '\'' +
+                ", line='" + line + '\'' +
                 ", depth=" + depth +
                 ", date='" + date + '\'' +
                 ", hasConnection=" + hasConnection +

@@ -47,7 +47,7 @@ public class Concentrator {
         logger.log(Level.INFO, report.toString());
     }
 
-    public void applyAllDates(Set<Station> stations) {
+    public void applyAllDates(List<Station> stations) {
         TreeSet<StationDate> allDates = new TreeSet<>();
         discoveredFiles.get("csv")
                 .forEach(file -> allDates.addAll(CsvParser.parseFile(file.getAbsolutePath())));
@@ -77,7 +77,7 @@ public class Concentrator {
         logUnaffected(stations.stream().filter(station -> station.getDate() == null).toList());
     }
 
-    public void applyAllDepths(Set<Station> stations) {
+    public void applyAllDepths(List<Station> stations) {
         TreeSet<StationDepth> allDepths = new TreeSet<>();
         discoveredFiles.get("json")
                 .forEach(file -> allDepths.addAll(JsonParser.parseFile(file.getAbsolutePath())));

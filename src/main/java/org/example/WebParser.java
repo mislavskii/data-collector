@@ -41,9 +41,9 @@ public class WebParser {
         return lines;
     }
 
-    Set<Station> extractStations() {
+    List<Station> extractStations() {
         logger.log(Level.INFO, "EXTRACTING STATIONS...");
-        Set<Station> stations = new TreeSet<>();
+        List<Station> stations = new LinkedList<>();
         Elements lines = page.select("div.js-metro-stations");
         lines.forEach(line -> {
             String lineNumber = line.attr("data-line");
@@ -53,8 +53,8 @@ public class WebParser {
                 Station station = new Station(stationName);
                 station.setHasConnection(holder.select("span.t-icon-metroln").size() > 0);
                 station.setLine(lineNumber);
-                String message = stations.add(station) ? "added: " : "- NOT ADDED: ";
-                logger.log(Level.INFO, message + station);
+                stations.add(station);
+                logger.log(Level.INFO, "added: " + station);
             });
         });
         logger.log(Level.INFO, "TOTAL: " + stations.size());

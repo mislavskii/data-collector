@@ -38,8 +38,10 @@ public class Main {
         System.out.println("Total: " + stations.size());
 
         System.out.println();
+        System.out.println("Serializing to json/...");
         JsonWriter jsonWriter = new JsonWriter(stations, lines);
         jsonWriter.serializeStations();
+        jsonWriter.serializeStationsAndLines();
 
     }
 
