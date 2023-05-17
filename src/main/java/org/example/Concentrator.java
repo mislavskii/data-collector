@@ -38,16 +38,6 @@ public class Concentrator {
         return discoveredFiles;
     }
 
-    private String normalize(String string) {
-        return string.strip().replaceAll("\\s+?", " ").toLowerCase().replace('ё', 'е');
-    }
-
-    private void logUnaffected(List<Station> unaffectedStations) {
-        StringBuilder report = new StringBuilder(String.format("unaffected (%d):%n", unaffectedStations.size()));
-        unaffectedStations.forEach(station -> report.append(station).append(SEP));
-        logger.log(Level.INFO, report.toString());
-    }
-
     public void applyAllDates(List<Station> stations) {
         Set<StationDate> allDates = new LinkedHashSet<>();
         discoveredFiles.get("csv")
@@ -57,7 +47,8 @@ public class Concentrator {
         allDates.forEach(stationDate -> {
             if (stations.stream()
                     .noneMatch(station -> normalize(station.getName()).equals(normalize(stationDate.getName())))) {
-                String message = stations.add(new Station(stationDate.getName(), stationDate.getDate())) ? "+ADDED: " : "-FAILED TO ADD: ";
+                String message = stations.add(new Station(stationDate.getName(), stationDate.getDate()))
+                        ? "+ADDED: " : "-FAILED TO ADD: ";
                 logger.log(Level.INFO, message + stationDate);
             }
         });
@@ -88,7 +79,8 @@ public class Concentrator {
             var depth = stationDepth.getDepthAsFloat();
             if (stations.stream()
                     .noneMatch(station -> normalize(station.getName()).equals(normalize(stationDepth.getName())))) {
-                String message = stations.add(new Station(stationDepth.getName(), depth)) ? "+ADDED: " : "-FAILED TO ADD: ";
+                String message = stations.add(new Station(stationDepth.getName(), depth))
+                        ? "+ADDED: " : "-FAILED TO ADD: ";
                 logger.log(Level.INFO, message + stationDepth);
             }
         });
@@ -107,6 +99,16 @@ public class Concentrator {
                     logger.log(Level.INFO, "result: " + station);
                 });
         logUnaffected(stations.stream().filter(station -> station.getDepth() == null).toList());
+    }
+
+    private String normalize(String string) {
+        return string.strip().replaceAll("\\s+?", " ").toLowerCase().replace('ё', 'е');
+    }
+
+    private void logUnaffected(List<Station> unaffectedStations) {
+        StringBuilder report = new StringBuilder(String.format("unaffected (%d):%n", unaffectedStations.size()));
+        unaffectedStations.forEach(station -> report.append(station).append(SEP));
+        logger.log(Level.INFO, report.toString());
     }
 
 }

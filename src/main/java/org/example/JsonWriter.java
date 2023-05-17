@@ -3,37 +3,46 @@ package org.example;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.example.warehouse.Line;
 import org.example.warehouse.Station;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class JsonWriter {
     private final List<Station> stations;
-    private final Set<Line> lines;
+    private final TreeSet<Line> lines;
     private final ObjectWriter writer;
 
     public JsonWriter(List<Station> stations, Set<Line> lines) {
         this.stations = stations;
-        this.lines = lines;
+        this.lines = new TreeSet<>(lines);
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
         DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
         prettyPrinter.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
+
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Station.class, new StationSerializer());
+        mapper.registerModule(module);
+
         this.writer = mapper.writer(prettyPrinter);
     }
 
     public void serializeStations() {
         Map<String, List<Station>> stationsAsMap = getStationsAsMap();
-
         try {
             writer.writeValue(Paths.get("json/stations.json").toFile(), stationsAsMap);
         } catch (IOException e) {
@@ -43,7 +52,7 @@ public class JsonWriter {
 
     public void serializeStationsAndLines() {
         Map<String, Object> greatMapOfEverything = new LinkedHashMap<>();
-        greatMapOfEverything.put("stations", new TreeMap<>(mapStationsToLines()));
+        greatMapOfEverything.put("stations", mapStationsToLines());
         greatMapOfEverything.put("lines", lines);
         try {
             writer.writeValue(Paths.get("json/map.json").toFile(), greatMapOfEverything);
@@ -51,7 +60,6 @@ public class JsonWriter {
             e.printStackTrace();
         }
     }
-
 
     private Map<String, List<Station>> getStationsAsMap() {
         List<Station> stationsWithLineNames = getStationsWithLineNames();
@@ -76,10 +84,38 @@ public class JsonWriter {
         return stationsWithLineNames;
     }
 
-    private Map<String, List<Station>> mapStationsToLines() {
-        return stations.stream()
-                .filter(station -> station.getLine() != null)
-                .collect(Collectors.groupingBy(Station::getLine));
+    private Map<String, List<String>> mapStationsToLines() {
+        Map<String, List<String>> linesWithStations = new LinkedHashMap<>();
+        lines.forEach(line -> linesWithStations.put(
+                line.number(),
+                stations.stream()
+                        .filter(station -> station.getLine() != null)
+                        .filter(station -> station.getLine().equals(line.number()))
+                        .map(Station::getName).toList()
+        ));
+        return linesWithStations;
+    }
+
+    private static class StationSerializer extends JsonSerializer<Station> {
+        @Override
+        public void serialize(Station station, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
+                throws IOException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("name", station.getName());
+            if (station.getLine() != null) {
+                jsonGenerator.writeStringField("line", station.getLine());
+            }
+            if (station.getDate() != null) {
+                jsonGenerator.writeStringField("date", station.getDate());
+            }
+            if (station.getDepth() != null) {
+                jsonGenerator.writeNumberField("depth", station.getDepth());
+            }
+            if (station.getLine() != null) {
+                jsonGenerator.writeBooleanField("hasConnection", station.hasConnection());
+            }
+            jsonGenerator.writeEndObject();
+        }
     }
 
 }
