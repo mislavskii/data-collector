@@ -29,7 +29,7 @@ public class WebParser {
 
     Set<Line> extractLines() {
         logger.log(Level.INFO, "Starting line extraction.");
-        Set<Line> lines = new TreeSet<>(Comparator.comparing(Line::number));
+        Set<Line> lines = new TreeSet<>();
         Elements lineHolders = page.select("span.js-metro-line");
         lineHolders.forEach(holder -> {
             String lineName = holder.text();
@@ -41,9 +41,9 @@ public class WebParser {
         return lines;
     }
 
-    List<Station> extractStations() {
+    Set<Station> extractStations() {
         logger.log(Level.INFO, "EXTRACTING STATIONS...");
-        List<Station> stations = new LinkedList<>();
+        Set<Station> stations = new LinkedHashSet<>();
         Elements lines = page.select("div.js-metro-stations");
         lines.forEach(line -> {
             String lineNumber = line.attr("data-line");

@@ -23,8 +23,8 @@ public class JsonWriter {
     private final TreeSet<Line> lines;
     private final ObjectWriter writer;
 
-    public JsonWriter(List<Station> stations, Set<Line> lines) {
-        this.stations = stations;
+    public JsonWriter(Set<Station> stations, Set<Line> lines) {
+        this.stations = new LinkedList<>(stations);
         this.lines = new TreeSet<>(lines);
 
         ObjectMapper mapper = new ObjectMapper();

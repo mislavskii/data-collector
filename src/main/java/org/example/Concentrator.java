@@ -38,7 +38,7 @@ public class Concentrator {
         return discoveredFiles;
     }
 
-    public void applyAllDates(List<Station> stations) {
+    public void applyAllDates(Set<Station> stations) {
         Set<StationDate> allDates = new LinkedHashSet<>();
         discoveredFiles.get("csv")
                 .forEach(file -> allDates.addAll(CsvParser.parseFile(file.getAbsolutePath())));
@@ -69,7 +69,7 @@ public class Concentrator {
         logUnaffected(stations.stream().filter(station -> station.getDate() == null).toList());
     }
 
-    public void applyAllDepths(List<Station> stations) {
+    public void applyAllDepths(Set<Station> stations) {
         TreeSet<StationDepth> allDepths = new TreeSet<>();
         discoveredFiles.get("json")
                 .forEach(file -> allDepths.addAll(JsonParser.parseFile(file.getAbsolutePath())));
