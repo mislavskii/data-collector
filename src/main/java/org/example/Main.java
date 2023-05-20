@@ -24,7 +24,7 @@ public class Main {
         Concentrator concentrator = new Concentrator();
 
         System.out.println("Discovering data files...");
-        String path = "zip/stations-data.zip";
+        String path = "stations-data.zip";
         concentrator.getDataFromZip(path);
 
         System.out.println("Applying dates...");

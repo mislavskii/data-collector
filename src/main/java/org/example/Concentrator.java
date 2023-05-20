@@ -15,12 +15,12 @@ public class Concentrator {
     private Map<String, List<File>> discoveredFiles;
     private final Logger logger = LogManager.getLogger(Concentrator.class);
     private final String SEP = System.lineSeparator();
+    private static final String ZIPDIR = "zip/";
 
-    public Map<String, List<File>> getDataFromZip(String zipPath) {
+    public Map<String, List<File>> getDataFromZip(String fileName) {
         discoveredFiles = new HashMap<>();
-        try (ZipFile zip = new ZipFile(zipPath)) {
-            // TODO: generalize path
-            String outPath = "zip/" + zip.getFile().getName().replace(".zip", "");
+        try (ZipFile zip = new ZipFile(ZIPDIR + fileName)) {
+            String outPath = zip.getFile().getPath().replace(".zip", "");
             zip.extractAll(outPath);
             FileFinder finder = new FileFinder();
             logger.log(Level.INFO, "Discovering data files.");

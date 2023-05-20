@@ -1,30 +1,32 @@
 package org.example;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Level;
 import org.example.warehouse.Line;
 import org.example.warehouse.Station;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class WebParser {
     private Document page;
     private final Logger logger = LogManager.getLogger(WebParser.class);
 
-    void obtainWebPage(String url) {
+    boolean obtainWebPage(String url) {
         System.out.println("URL: " + url);
         System.out.println("Requesting...");
         try {
             page = Jsoup.connect(url).get();
             System.out.printf("Loaded web page: %s, %d chars.%n", page.title(), page.text().length());
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Requested web page could not be obtained.");
         }
+        return page != null;
     }
 
     Set<Line> extractLines() {
