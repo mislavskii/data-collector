@@ -1,7 +1,6 @@
 package org.example.warehouse;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class StationDate implements Comparable<StationDate> {
     private String name;
@@ -43,8 +42,8 @@ public class StationDate implements Comparable<StationDate> {
 
         StationDate that = (StationDate) o;
 
-        if (!name.equals(that.name)) return false;
-        return Objects.equals(date, that.date);
+        if (!name.equals(that.getName())) return false;
+        return date.equals(that.getDate());
     }
 
     @Override

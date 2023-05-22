@@ -1,0 +1,22 @@
+[
+  {
+    "station_name": "Приближенная",
+    "depth": "-11.7"
+  },
+  {
+    "station_name": "приближённая",
+    "depth": "-17.1"
+  },
+  {
+    "station_name": "Точная",
+    "depth": "-17.7"
+  },
+  {
+    "station_name": "Новая",
+    "depth": "-17.7"
+  },
+  {
+    "station_name": "новая",
+    "depth": "-11.7"
+  }
+]

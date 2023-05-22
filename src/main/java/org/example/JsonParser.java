@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 public class JsonParser {
     private static final Logger logger = LogManager.getLogger(JsonParser.class);
 
+    private JsonParser() {}
+
     public static Set<StationDepth> parseFile(String path) {
         logger.log(Level.INFO, "Parsing " + path);
 

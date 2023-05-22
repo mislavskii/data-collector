@@ -53,8 +53,7 @@ public class Concentrator {
             }
         });
         logger.log(Level.INFO, "Applying dates...");
-        stations.stream().filter(station -> station.getDate() == null)
-                .forEach(station -> {
+        stations.forEach(station -> {
                     logger.log(Level.INFO, "choosing date for " + station);
                     StringBuilder candidates = new StringBuilder("from: ");
                     var date = allDates.stream()
@@ -85,8 +84,7 @@ public class Concentrator {
             }
         });
         logger.log(Level.INFO, "Applying depths...");
-        stations.stream().filter(station -> station.getDepth() == null)
-                .forEach(station -> {
+        stations.forEach(station -> {
                     logger.log(Level.INFO, "choosing depth for " + station);
                     StringBuilder candidates = new StringBuilder("from: ");
                     var depth = allDepths.stream()

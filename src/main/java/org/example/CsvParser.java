@@ -13,6 +13,8 @@ import java.util.*;
 public class CsvParser {
     private static final Logger logger = LogManager.getLogger(CsvParser.class);
 
+    private CsvParser(){}
+
     public static Set<StationDate> parseFile(String path) {
         logger.log(Level.INFO, "Parsing " + path);
         Set<StationDate> stations = new HashSet<>();
