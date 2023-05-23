@@ -14,18 +14,15 @@ class JsonWriterTest {
     Set<Line> lines = generateLines();
     Set<Station> stations = generateStations();
     JsonWriter jsonWriter = new JsonWriter(stations, lines);
-    String generatedJson;
+    String generatedJson = "";
 
     @Test
     void serializeStations() {
         jsonWriter.serializeStations();
-        try {
-            generatedJson = Files.readString(Paths.get(JsonWriter.JSONDIR + "stations.json"))
-                    .replaceAll("\\s", "");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Assertions.assertFalse(generatedJson.isEmpty(), "no json output generated");
+        setGeneratedJson("stations.json");
+        generatedJsonPresentTest();
+
+        // TODO: check the key properly
         Assertions.assertTrue(generatedJson.startsWith("{\"stations\":["), "root key not generated correctly");
 
         generatedJson = generatedJson.replace("{\"stations\":[{", "").replace("}]}", "");
@@ -33,7 +30,6 @@ class JsonWriterTest {
 
         Assertions.assertEquals(4, strippedStations.length, "wrong number of stations in output");
 
-        // TODO: atomize
         String lineLess = strippedStations[0];
         Assertions.assertTrue(
                 !lineLess.contains("line") && !lineLess.contains("hasConnection" )
@@ -69,6 +65,45 @@ class JsonWriterTest {
     @Test
     void serializeStationsAndLines() {
         // TODO: write the test
+        jsonWriter.serializeStationsAndLines();
+        setGeneratedJson("map.json");
+        generatedJsonPresentTest();
+
+        String[] rootKeys = generatedJson.substring(1, generatedJson.lastIndexOf('}')).split("},", 2);
+        if (rootKeys.length != 2) {
+            Assertions.fail(String.format("wrong number of root-level entities in output (%s)", rootKeys.length));
+        }
+
+        String[] stations = rootKeys[0].split(":", 2);
+        String[] lines = rootKeys[1].split(":", 2);
+        Assertions.assertEquals("\"stations\"", stations[0], "wrong first root key");
+        Assertions.assertEquals("\"lines\"", lines[0], "wrong second root key");
+
+        String[] strippedStations = stations[1].substring(1).split(",");
+        String[] expectedStations = {"\"1\":[\"Бездатная\"]", "\"2\":[\"Безглубинная\"]", "\"11\":[\"Беспересадочная\"]"};
+        Assertions.assertArrayEquals(expectedStations, strippedStations, "wrong representation of stations");
+
+        String[] strippedLines = lines[1].substring(lines[1].indexOf('"'), lines[1].lastIndexOf('}')).split("},\\{");
+        String[] expectedLines = {
+                "\"number\":\"1\",\"name\":\"Первая\"",
+                "\"number\":\"2\",\"name\":\"Вторая\"",
+                "\"number\":\"11\",\"name\":\"Одиннадцатая\""
+        };
+        Assertions.assertArrayEquals(expectedLines, strippedLines, "wrong representation of lines");
+
+    }
+
+    private void setGeneratedJson(String fileName) {
+        try {
+            generatedJson = Files.readString(Paths.get(JsonWriter.JSONDIR + fileName))
+                    .replaceAll("\\s", "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void generatedJsonPresentTest() {
+        Assertions.assertFalse(generatedJson.isEmpty(), "no json output generated");
     }
 
     private Set<Station> generateStations(){
