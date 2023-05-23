@@ -22,6 +22,7 @@ public class JsonWriter {
     private final List<Station> stations;
     private final TreeSet<Line> lines;
     private final ObjectWriter writer;
+    static final String JSONDIR = "json/";
 
     public JsonWriter(Set<Station> stations, Set<Line> lines) {
         this.stations = new LinkedList<>(stations);
@@ -44,7 +45,7 @@ public class JsonWriter {
     public void serializeStations() {
         Map<String, List<Station>> stationsAsMap = getStationsAsMap();
         try {
-            writer.writeValue(Paths.get("json/stations.json").toFile(), stationsAsMap);
+            writer.writeValue(Paths.get( JSONDIR + "stations.json").toFile(), stationsAsMap);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +56,7 @@ public class JsonWriter {
         greatMapOfEverything.put("stations", mapStationsToLines());
         greatMapOfEverything.put("lines", lines);
         try {
-            writer.writeValue(Paths.get("json/map.json").toFile(), greatMapOfEverything);
+            writer.writeValue(Paths.get(JSONDIR + "map.json").toFile(), greatMapOfEverything);
         } catch (IOException e) {
             e.printStackTrace();
         }
