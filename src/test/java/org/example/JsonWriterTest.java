@@ -8,7 +8,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 class JsonWriterTest {
     Set<Line> lines = generateLines();
@@ -18,17 +21,19 @@ class JsonWriterTest {
 
     @Test
     void serializeStations() {
+        int expectedStationCount = 4;
         jsonWriter.serializeStations();
         setGeneratedJson("stations.json");
         generatedJsonPresentTest();
 
-        // TODO: check the key properly
-        Assertions.assertTrue(generatedJson.startsWith("{\"stations\":["), "root key not generated correctly");
+        String[] rootEntry = generatedJson.split(":", 2);
+        String rootKey = rootEntry[0].substring(1);
+        Assertions.assertEquals("\"stations\"", rootKey, "root key not generated correctly");
 
-        generatedJson = generatedJson.replace("{\"stations\":[{", "").replace("}]}", "");
-        String[] strippedStations = generatedJson.split("},\\{");
+        String rootValue = rootEntry[1].replace("[{", "").replace("}]}", "");
+        String[] strippedStations = rootValue.split("},\\{");
 
-        Assertions.assertEquals(4, strippedStations.length, "wrong number of stations in output");
+        Assertions.assertEquals(expectedStationCount, strippedStations.length, "wrong number of stations in output");
 
         String lineLess = strippedStations[0];
         Assertions.assertTrue(
@@ -64,7 +69,6 @@ class JsonWriterTest {
 
     @Test
     void serializeStationsAndLines() {
-        // TODO: write the test
         jsonWriter.serializeStationsAndLines();
         setGeneratedJson("map.json");
         generatedJsonPresentTest();
