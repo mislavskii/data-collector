@@ -10,17 +10,14 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class FileFinder {
+    private Map<String, List<File>> results;
     private final String[] EXTENSIONS = {"json", "csv"};
-    final Map<String, List<File>> results;
 
-    public FileFinder() {
+    Map<String, List<File>> findDataFiles(String path) {
         this.results = new HashMap<>();
         for (String extension : EXTENSIONS) {
             results.put(extension, new ArrayList<>());
         }
-    }
-
-    Map<String, List<File>> findDataFiles(String path) {
         try (Stream<Path> stream = Files.walk(Path.of(path))) {
             stream.forEach(p -> {
                 File file = new File(p.toString());
@@ -29,7 +26,7 @@ public class FileFinder {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("the folder is non-existent or inaccessible.");
         }
         return results;
     }
