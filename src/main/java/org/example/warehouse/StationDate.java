@@ -3,7 +3,7 @@ package org.example.warehouse;
 import java.time.LocalDate;
 
 public class StationDate implements Comparable<StationDate> {
-    private String name;
+    private final String name;
     private String date;
 
     public StationDate(String name, String date) {
@@ -13,10 +13,6 @@ public class StationDate implements Comparable<StationDate> {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDate() {
