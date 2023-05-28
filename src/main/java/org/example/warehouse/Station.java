@@ -1,6 +1,6 @@
 package org.example.warehouse;
 
-public class Station implements Comparable<Station> {
+public class Station {
     private final String name;
     private String line;
     private String date;
@@ -74,14 +74,6 @@ public class Station implements Comparable<Station> {
         int result = getName().hashCode();
         result = 31 * result + (getLine() != null ? getLine().hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public int compareTo(Station station) {
-        if (this.name.equals(station.getName())) {
-            return this.line.compareTo(station.getLine());
-        }
-        return this.name.compareTo(station.getName());
     }
 
     @Override

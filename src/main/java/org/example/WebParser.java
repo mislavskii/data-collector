@@ -38,7 +38,7 @@ public class WebParser {
             String lineNumber = holder.attr("data-line");
             Line line = new Line(lineNumber, lineName);
             lines.add(line);
-            logger.log(Level.INFO, "added: " + line.number() + ". " + line.name());
+            logger.log(Level.INFO, "added: " + line);
         });
         return lines;
     }
