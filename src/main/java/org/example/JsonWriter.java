@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.warehouse.Line;
 import org.example.warehouse.Station;
 
@@ -23,6 +25,7 @@ public class JsonWriter {
     private final TreeSet<Line> lines;
     private final ObjectWriter writer;
     static final String JSONDIR = "json/";
+    private final Logger logger = LogManager.getLogger(JsonWriter.class);
 
     public JsonWriter(Set<Station> stations, Set<Line> lines) {
         this.stations = new LinkedList<>(stations);
@@ -47,7 +50,8 @@ public class JsonWriter {
         try {
             writer.writeValue(Paths.get( JSONDIR + "stations.json").toFile(), stationsAsMap);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Couldn't write stations to json file");
+            Utils.logError(logger, e);
         }
     }
 
@@ -58,7 +62,8 @@ public class JsonWriter {
         try {
             writer.writeValue(Paths.get(JSONDIR + "map.json").toFile(), greatMapOfEverything);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Couldn't write map to json file");
+            Utils.logError(logger, e);
         }
     }
 

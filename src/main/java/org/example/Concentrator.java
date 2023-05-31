@@ -32,6 +32,7 @@ public class Concentrator {
             discoveredFiles = finder.findDataFiles(outPath);
         } catch (Exception e) {
             System.out.println("archive non-existent or inaccessible.");
+            Utils.logError(logger, e);
         }
         discoveredFiles.values().forEach(v -> v.sort(Comparator.comparing(File::getName)));
         StringBuilder fileMap = new StringBuilder("discovered: \n");

@@ -23,6 +23,7 @@ public class CsvParser {
             lines = Files.readAllLines(Paths.get(path));
         } catch (IOException e) {
             System.out.println("the file is non-existent or inaccessible.");
+            Utils.logError(logger, e);
         }
         lines.stream().skip(1).forEach(line -> {
             var fragments = line.split(",");

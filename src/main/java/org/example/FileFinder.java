@@ -1,5 +1,8 @@
 package org.example;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +15,8 @@ import java.util.stream.Stream;
 public class FileFinder {
     private Map<String, List<File>> results;
     private final String[] EXTENSIONS = {"json", "csv"};
+    private final Logger logger = LogManager.getLogger(FileFinder.class);
+
 
     Map<String, List<File>> findDataFiles(String path) {
         this.results = new HashMap<>();
@@ -27,6 +32,7 @@ public class FileFinder {
             });
         } catch (Exception e) {
             System.out.println("the folder is non-existent or inaccessible.");
+            Utils.logError(logger, e);
         }
         return results;
     }
