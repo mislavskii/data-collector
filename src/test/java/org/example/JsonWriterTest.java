@@ -65,6 +65,8 @@ class JsonWriterTest {
                         && connectionLess.contains("\"depth\":-11.0"),
                 "connectionless station represented incorrectly or in wrong position");
 
+
+
     }
 
     @Test

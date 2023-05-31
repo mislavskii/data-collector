@@ -1,6 +1,7 @@
 package org.example;
 // TODO:
-//  testing
+//  exceptions logging
+//  log recycling
 
 public class Main {
 
@@ -20,17 +21,17 @@ public class Main {
         System.out.println("Extracting stations...");
         var stations = parser.extractStations();
 
-        Concentrator concentrator = new Concentrator();
+        Concentrator concentrator = new Concentrator(stations);
 
         System.out.println("Discovering data files...");
         String path = "stations-data.zip";
         concentrator.getDataFromZip(path);
 
         System.out.println("Applying dates...");
-        concentrator.applyAllDates(stations);
+        concentrator.applyAllDates();
 
         System.out.println("Applying depths...");
-        concentrator.applyAllDepths(stations);
+        concentrator.applyAllDepths();
 
         System.out.println("\nAggregated outcome:");
         stations.forEach(System.out::println);

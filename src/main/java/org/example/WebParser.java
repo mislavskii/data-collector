@@ -25,6 +25,7 @@ public class WebParser {
             System.out.printf("Loaded web page: %s, %d chars.%n", page.title(), page.text().length());
         } catch (Exception e) {
             System.out.println("Requested web page could not be obtained.");
+            Utils.logError(logger, e);
         }
         return page != null;
     }

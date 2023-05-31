@@ -13,9 +13,14 @@ import java.util.*;
 
 public class Concentrator {
     private Map<String, List<File>> discoveredFiles;
+    private final Set<Station> stations;
     private final Logger logger = LogManager.getLogger(Concentrator.class);
     private final String SEP = System.lineSeparator();
     private static final String ZIPDIR = "zip/";
+
+    public Concentrator(Set<Station> stations){
+        this.stations = stations;
+    }
 
     public Map<String, List<File>> getDataFromZip(String fileName) {
         discoveredFiles = new HashMap<>();
@@ -26,7 +31,7 @@ public class Concentrator {
             logger.log(Level.INFO, "Discovering data files.");
             discoveredFiles = finder.findDataFiles(outPath);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("archive non-existent or inaccessible.");
         }
         discoveredFiles.values().forEach(v -> v.sort(Comparator.comparing(File::getName)));
         StringBuilder fileMap = new StringBuilder("discovered: \n");
@@ -38,7 +43,7 @@ public class Concentrator {
         return discoveredFiles;
     }
 
-    public void applyAllDates(Set<Station> stations) {
+    public void applyAllDates() {
         Set<StationDate> allDates = new LinkedHashSet<>();
         discoveredFiles.get("csv")
                 .forEach(file -> allDates.addAll(CsvParser.parseFile(file.getAbsolutePath())));
@@ -68,7 +73,7 @@ public class Concentrator {
         logUnaffected(stations.stream().filter(station -> station.getDate() == null).toList());
     }
 
-    public void applyAllDepths(Set<Station> stations) {
+    public void applyAllDepths() {
         TreeSet<StationDepth> allDepths = new TreeSet<>();
         discoveredFiles.get("json")
                 .forEach(file -> allDepths.addAll(JsonParser.parseFile(file.getAbsolutePath())));
