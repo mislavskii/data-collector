@@ -1,12 +1,13 @@
 package org.example;
 // TODO:
-//  exceptions logging
 //  log recycling
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Hello, Collectors!");
+
+        Utils.cleanUpLogDir();
 
         String url = "https://skillbox-java.github.io/";
 
