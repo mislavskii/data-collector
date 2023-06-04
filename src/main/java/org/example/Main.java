@@ -1,6 +1,5 @@
 package org.example;
-// TODO:
-//  log recycling
+// TODO: ???
 
 public class Main {
 
@@ -43,6 +42,8 @@ public class Main {
         JsonWriter jsonWriter = new JsonWriter(stations, lines);
         jsonWriter.serializeStations();
         jsonWriter.serializeStationsAndLines();
+
+        System.out.println("ALL DONE!");
 
     }
 

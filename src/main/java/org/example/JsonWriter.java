@@ -11,11 +11,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.warehouse.Line;
 import org.example.warehouse.Station;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
@@ -28,6 +30,9 @@ public class JsonWriter {
     private final Logger logger = LogManager.getLogger(JsonWriter.class);
 
     public JsonWriter(Set<Station> stations, Set<Line> lines) {
+        File jsonDir = new File(JSONDIR);
+        String logMessage = jsonDir.mkdir() ? "Created json directory" : "Json directory creation skipped";
+        logger.log(Level.INFO, logMessage);
         this.stations = new LinkedList<>(stations);
         this.lines = new TreeSet<>(lines);
 
@@ -47,22 +52,27 @@ public class JsonWriter {
 
     public void serializeStations() {
         Map<String, List<Station>> stationsAsMap = getStationsAsMap();
+        logger.log(Level.INFO, "Writing stations to json file");
         try {
             writer.writeValue(Paths.get( JSONDIR + "stations.json").toFile(), stationsAsMap);
+            logger.log(Level.INFO, "Success!");
         } catch (IOException e) {
-            System.out.println("Couldn't write stations to json file");
+            System.out.println(e.getMessage());
             Utils.logError(logger, e);
         }
     }
 
     public void serializeStationsAndLines() {
+        logger.log(Level.INFO, "Creating the map...");
         Map<String, Object> greatMapOfEverything = new LinkedHashMap<>();
         greatMapOfEverything.put("stations", mapStationsToLines());
         greatMapOfEverything.put("lines", lines);
+        logger.log(Level.INFO, "Writing the map to json file");
         try {
             writer.writeValue(Paths.get(JSONDIR + "map.json").toFile(), greatMapOfEverything);
+            logger.log(Level.INFO, "Success!");
         } catch (IOException e) {
-            System.out.println("Couldn't write map to json file");
+            System.out.println(e.getMessage());
             Utils.logError(logger, e);
         }
     }

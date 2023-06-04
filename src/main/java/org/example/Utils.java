@@ -1,16 +1,17 @@
 package org.example;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
 public class Utils {
+    private static final Logger logger = LogManager.getLogger(Utils.class);
+
 
     private Utils() {
     }
@@ -23,17 +24,17 @@ public class Utils {
     }
 
     static void cleanUpLogDir() {
-        String logsDir = "logs";
-        try (Stream<Path> logFiles = Files.walk(Path.of(logsDir), 1)) {
-            logFiles.filter(Files::isRegularFile).sorted(Comparator.reverseOrder()).skip(3).forEach(file -> {
-                try {
-                    Files.delete(file);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
+        int maxFileCount = 5;
+        File logsDir = new File("logs");
+        logger.log(Level.INFO, "Cleaning the logs directory...");
+        File[] logFiles = logsDir.listFiles();
+        if (logFiles != null) {
+            Stream.of(logFiles).filter(file -> file.getName().startsWith("execution"))
+                    .sorted(Comparator.reverseOrder())
+                    .skip(maxFileCount)
+                    .forEach(file -> logger.log(
+                            Level.INFO, String.format("deleted %s : %s", file.getName(), file.delete())
+                    ));
         }
     }
 
