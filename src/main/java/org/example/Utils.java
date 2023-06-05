@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public class Utils {
     private static final Logger logger = LogManager.getLogger(Utils.class);
-
+    static final File LOGDIR = new File("logs");
 
     private Utils() {
     }
@@ -25,9 +25,8 @@ public class Utils {
 
     static void cleanUpLogDir() {
         int maxFileCount = 5;
-        File logsDir = new File("logs");
         logger.log(Level.INFO, "Cleaning the logs directory...");
-        File[] logFiles = logsDir.listFiles();
+        File[] logFiles = LOGDIR.listFiles();
         if (logFiles != null) {
             Stream.of(logFiles).filter(file -> file.getName().startsWith("execution"))
                     .sorted(Comparator.reverseOrder())

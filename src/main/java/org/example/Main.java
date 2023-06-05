@@ -1,5 +1,6 @@
 package org.example;
-// TODO: ???
+// TODO:
+//  console messages
 
 public class Main {
 
