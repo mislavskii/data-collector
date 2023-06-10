@@ -9,7 +9,11 @@ import org.example.warehouse.StationDate;
 import org.example.warehouse.StationDepth;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Concentrator {
     private Map<String, List<File>> discoveredFiles;
@@ -25,19 +29,21 @@ public class Concentrator {
     public Map<String, List<File>> getDataFromZip(String fileName) {
         discoveredFiles = new HashMap<>();
         String zipPath = ZIPDIR + fileName;
-        File outPath = new File("");
         try (ZipFile zip = new ZipFile(zipPath)) {
-            outPath = new File(zip.getFile().getPath().replace(".zip", ""));
-            zip.extractAll(outPath.getPath());
+            var outPath = zip.getFile().getPath().replace(".zip", "");
+            Path destinationDir = Paths.get(outPath);
+            destinationDir.toFile().deleteOnExit();
+            zip.extractAll(outPath);
+            try (Stream<Path> stream = Files.walk(destinationDir)) {
+                stream.forEach(path -> path.toFile().deleteOnExit());
+            }
             FileFinder finder = new FileFinder();
             logger.log(Level.INFO, "Discovering data files.");
-            discoveredFiles = finder.findDataFiles(outPath.getAbsolutePath());
+            discoveredFiles = finder.findDataFiles(outPath);
         } catch (Exception e) {
             System.out.printf("archive `%s` could not be accessed.%n", zipPath);
-            if (outPath.delete()) {
-                System.out.println("\tdestination rolled back.");
-            }
             Utils.logError(logger, e);
+            return discoveredFiles;
         }
         discoveredFiles.values().forEach(v -> v.sort(Comparator.comparing(File::getName)));
         StringBuilder fileMap = new StringBuilder("discovered: \n");
@@ -46,6 +52,10 @@ public class Concentrator {
             v.forEach(file -> fileMap.append("\t").append(file).append(System.lineSeparator()));
         });
         logger.log(Level.INFO, fileMap.toString());
+        applyAllDates();
+        System.out.println("Dates applied.");
+        applyAllDepths();
+        System.out.println("Depths applied.");
         return discoveredFiles;
     }
 

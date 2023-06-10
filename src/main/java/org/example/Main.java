@@ -28,12 +28,6 @@ public class Main {
         String path = "stations-data.zip";
         concentrator.getDataFromZip(path);
 
-        System.out.println("Applying dates...");
-        concentrator.applyAllDates();
-
-        System.out.println("Applying depths...");
-        concentrator.applyAllDepths();
-
         System.out.println("\nAggregated outcome:");
         stations.forEach(System.out::println);
         System.out.println("Total: " + stations.size());
