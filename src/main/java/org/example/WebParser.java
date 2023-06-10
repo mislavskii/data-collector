@@ -24,7 +24,7 @@ public class WebParser {
             page = Jsoup.connect(url).get();
             System.out.printf("Loaded web page: %s, %d chars.%n", page.title(), page.text().length());
         } catch (Exception e) {
-            System.out.println("Requested web page could not be obtained.");
+            System.out.println(e.getMessage());
             Utils.logError(logger, e);
         }
         return page != null;

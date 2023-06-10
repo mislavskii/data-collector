@@ -1,6 +1,6 @@
 package org.example;
 // TODO:
-//  console messages
+//  leave no trash in zip folder
 
 public class Main {
 

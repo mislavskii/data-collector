@@ -24,14 +24,19 @@ public class Concentrator {
 
     public Map<String, List<File>> getDataFromZip(String fileName) {
         discoveredFiles = new HashMap<>();
-        try (ZipFile zip = new ZipFile(ZIPDIR + fileName)) {
-            String outPath = zip.getFile().getPath().replace(".zip", "");
-            zip.extractAll(outPath);
+        String zipPath = ZIPDIR + fileName;
+        File outPath = new File("");
+        try (ZipFile zip = new ZipFile(zipPath)) {
+            outPath = new File(zip.getFile().getPath().replace(".zip", ""));
+            zip.extractAll(outPath.getPath());
             FileFinder finder = new FileFinder();
             logger.log(Level.INFO, "Discovering data files.");
-            discoveredFiles = finder.findDataFiles(outPath);
+            discoveredFiles = finder.findDataFiles(outPath.getAbsolutePath());
         } catch (Exception e) {
-            System.out.println("archive non-existent or inaccessible.");
+            System.out.printf("archive `%s` could not be accessed.%n", zipPath);
+            if (outPath.delete()) {
+                System.out.println("\tdestination rolled back.");
+            }
             Utils.logError(logger, e);
         }
         discoveredFiles.values().forEach(v -> v.sort(Comparator.comparing(File::getName)));

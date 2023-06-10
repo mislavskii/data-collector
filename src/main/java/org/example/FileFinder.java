@@ -31,7 +31,7 @@ public class FileFinder {
                 }
             });
         } catch (Exception e) {
-            System.out.println("the folder is non-existent or inaccessible.");
+            System.out.printf("Data files could not be discovered: the folder `%s` is non-existent or inaccessible.%n", path);
             Utils.logError(logger, e);
         }
         return results;

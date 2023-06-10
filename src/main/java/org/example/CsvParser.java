@@ -22,7 +22,7 @@ public class CsvParser {
         try {
             lines = Files.readAllLines(Paths.get(path));
         } catch (IOException e) {
-            System.out.println("the file is non-existent or inaccessible.");
+            System.out.printf("CSV could not be parsed: the file `%s` is non-existent or inaccessible.%n", path);
             Utils.logError(logger, e);
         }
         lines.stream().skip(1).forEach(line -> {

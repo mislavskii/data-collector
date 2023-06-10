@@ -26,7 +26,7 @@ public class JsonParser {
         try {
             stations.addAll(Arrays.asList(mapper.readValue(Paths.get(path).toFile(), StationDepth[].class)));
         } catch (IOException e) {
-            System.out.println("the file is non-existent or inaccessible.");
+            System.out.printf("JSON could not be parsed: the file `%s` is non-existent or inaccessible.%n", path);
             Utils.logError(logger, e);
         }
         stations = stations.stream().filter(stationDepth -> stationDepth.getDepthAsFloat() != null)
