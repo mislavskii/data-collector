@@ -20,7 +20,7 @@ public class Concentrator {
     private final Set<Station> stations;
     private final Logger logger = LogManager.getLogger(Concentrator.class);
     private final String SEP = System.lineSeparator();
-    private static final String ZIPDIR = "zip/";
+    static final String ZIPDIR = "zip/";
 
     public Concentrator(Set<Station> stations){
         this.stations = stations;

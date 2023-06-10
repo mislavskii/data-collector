@@ -3,11 +3,16 @@ package org.example;
 import org.example.warehouse.Station;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConcentratorTest {
     Station exactStation = new Station("Точная");
@@ -27,7 +32,11 @@ class ConcentratorTest {
     }
 
     @Test
-    void applyAllDates() {
+    void applyAllDates() throws IOException {
+        var zipPath = Paths.get(Concentrator.ZIPDIR + "dates-test.zip");
+        Files.copy(Path.of("src/test/resources/dates-test.zip"), zipPath);
+        zipPath.toFile().deleteOnExit();
+
         Concentrator concentrator = new Concentrator(stations);
         concentrator.getDataFromZip("dates-test.zip");
         concentrator.applyAllDates();
@@ -47,7 +56,11 @@ class ConcentratorTest {
     }
 
     @Test
-    void applyAllDepths() {
+    void applyAllDepths() throws IOException {
+        var zipPath = Paths.get(Concentrator.ZIPDIR + "depths-test.zip");
+        Files.copy(Path.of("src/test/resources/depths-test.zip"), zipPath);
+        zipPath.toFile().deleteOnExit();
+
         Concentrator concentrator = new Concentrator(stations);
         concentrator.getDataFromZip("depths-test.zip");
         concentrator.applyAllDepths();
