@@ -51,6 +51,9 @@ public class JsonWriter {
     }
 
     public void serializeStations() {
+        File jsonDir = new File(JSONDIR);
+        String logMessage = jsonDir.mkdir() ? "Created json directory" : "Json directory creation skipped";
+        logger.log(Level.INFO, logMessage);
         Map<String, List<Station>> stationsAsMap = getStationsAsMap();
         logger.log(Level.INFO, "Writing stations to json file");
         try {

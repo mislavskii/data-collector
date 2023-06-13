@@ -1,6 +1,4 @@
 package org.example;
-// TODO:
-//  leave no trash in zip folder
 
 public class Main {
 
